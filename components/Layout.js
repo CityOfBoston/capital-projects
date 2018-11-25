@@ -66,29 +66,34 @@ export default class Layout extends React.Component {
             padding: 0.2rem !important;
           }
 
-          // filter button styles
-          .btn-outline-primary {
-            color: #091f2f;
-            border-color: #d2d2d2;
-          }
-          .btn {
-            border-radius: 0;
-          }
-          .btn-outline-primary.active,
-          .btn-outline-primary:active,
-          .btn-outline-primary:hover {
-            background-color: #288be4 !important;
-            border-color: #d2d2d2 !important;
-          }
+          // select dropdown styles
           .form-control {
-            border-radius: 0;
-            border-color: #d2d2d2;
+            border: 3px solid #091f2f;
+            font-family: 'Lora', serif;
+            font-style: italic;
           }
         `}</style>
         {/* set container div with room for navbar  */}
         <div style={{ minHeight: 'calc(100vh - 125px)' }}>
           <Navbar>
-            <h3>Capital Projects FY2019-FY2023</h3>
+            <div>
+              <h2
+                className="text-uppercase font-weight-bold m-0 pr-2"
+                style={{
+                  display: 'inline-block',
+                }}
+              >
+                Capital Projects
+              </h2>
+              <p
+                className="font-italic m-0"
+                style={{
+                  display: 'inline-block',
+                }}
+              >
+                Fiscal Years 2019-2023
+              </p>
+            </div>
             <div className="lo">
               <div className="lo-l">
                 <a href="https://www.boston.gov/">

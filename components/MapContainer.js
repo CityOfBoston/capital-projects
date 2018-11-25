@@ -3,15 +3,36 @@ import { Col, Row } from 'reactstrap';
 import Filters from '../components/Filters';
 import Map from '../components/Map';
 
-export default function MapContainer() {
-  return (
-    <Row>
-      <Col lg="3">
-        <Filters />
-      </Col>
-      <Col lg="9" className="p-lg-0 pr-md-5 pl-md-5">
-        <Map />
-      </Col>
-    </Row>
-  );
+class MapContainer extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      cabinetSelection: 'All',
+    };
+  }
+
+  // We update cabinetSelection state when the
+  // selection changes.
+  filterCabinets = e => {
+    this.setState({ cabinetSelection: e.target.value });
+  };
+
+  render() {
+    return (
+      <Row>
+        <Col lg="3">
+          <Filters
+            cabinetSelection={this.state.cabinetSelection}
+            cabinetChange={this.filterCabinets}
+          />
+        </Col>
+        <Col lg="9" className="p-lg-0 pr-md-5 pl-md-5">
+          <Map cabinetSelection={this.state.cabinetSelection} />
+        </Col>
+      </Row>
+    );
+  }
 }
+
+export default MapContainer;
