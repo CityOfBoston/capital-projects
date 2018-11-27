@@ -158,10 +158,7 @@ class Map extends React.Component {
               </li>        
               <li class="dl-i dl-i--b">
                 <div class="dl-t">
-                ${properties[2] ? `${properties[2]}<br/>` : ''}
-                ${properties[3] ? `${properties[3]}<br/>` : ''}
-                ${properties[4] ? `${properties[4]}<br/>` : ''}
-                ${properties[5] ? `${properties[5]}` : ''}
+                ${properties.map(property => `${property}`).join('<br/>')}
                 </div>
               </li>
             </ul>
