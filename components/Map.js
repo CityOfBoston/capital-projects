@@ -1,8 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Table from './Table';
+import getConfig from 'next/config';
 
 // We can't import these server-side because they require "window"
 const mapboxgl = process.browser ? require('mapbox-gl') : null;
+const MapboxGeocoder = process.browser
+  ? require('@mapbox/mapbox-gl-geocoder')
+  : null;
 
 const projects_url =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/FY2019_FY2023_Budget_Facilities_ADOPTED/FeatureServer/0';
@@ -10,20 +15,33 @@ const projects_url =
 const public_works_ramps_url =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/2';
 
+const public_works_streets_url =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcGIS/rest/services/pwd_capitalProjects_test/FeatureServer/0';
+
 const city_council_districts_url =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/City_Council_Districts_View/FeatureServer/0';
 
 class Map extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      clickedFeatureDataset: '',
+      clickedFeatureProperties: [],
+      showTable: false,
+    };
+  }
+
   componentDidMount() {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
-      center: [-71.084578, 42.309578],
+      center: [-71.066834, 42.315642],
       zoom: 11,
       maxZoom: 19,
       style: {
         version: 8,
         // Despite mapbox enabling vector basemaps, we use our own tiled
-        // basemap service to keep with city styling and branding
+        // basemap service to keep with city styling and branding.
         sources: {
           'esri-grey': {
             type: 'raster',
@@ -59,7 +77,80 @@ class Map extends React.Component {
       },
     });
 
+    // In order to add a geocoder to our map, we need a mapbox access token.
+    // We've stored that using environment variables inside out nextjs config file.
+    const { publicRuntimeConfig } = getConfig();
+    const accessToken = publicRuntimeConfig.MapboxAccessToken;
+
+    const geocoder = new MapboxGeocoder({
+      accessToken: accessToken,
+      flyTo: true,
+      placeholder: 'Show projects near...',
+      country: 'us',
+      // We set a bounding box so that the geocoder only looks for
+      // matches in and around Boston, MA.
+      // We need the minX, minY, maxX, maxY in that order.
+      bbox: [-71.216812, 42.226992, -70.986099, 42.395573],
+      zoom: 14,
+    });
+
+    // We want the geocoder div to show up in the Filters component so we've added
+    // a div there with the id "geocoder". Here we're appending the mapbox
+    // geocoder we just set up to that div.
+    document.getElementById('geocoder').appendChild(geocoder.onAdd(this.map));
+
     this.map.on('load', () => {
+      // When the map loads, we load up the icon we're using for showing
+      // geocoder results.
+      this.map.loadImage(
+        '/capital-projects/static/red-waypoint.png',
+        (error, image) => {
+          if (error)
+            // eslint-disable-next-line no-console
+            console.error(
+              'Could not load red waypoint icon. Error message:',
+              error
+            );
+          this.map.addImage('red-waypoint', image);
+        }
+      );
+
+      // The order in which the layers are loaded informs the order in which
+      // they are drawn. Layers loaded first are drawn first meaning they
+      // sit below the other layers.
+      // As a result, we load the geocoding point first, as we want that
+      // to sit under the other layers to keep it from interfering with click
+      // events on the other layers.
+      // Next is City Council Districts as that is a contextual layer. The
+      // public works street projects, public works ramps, budget
+      // facilities, and highlight layers are loaded next in that order.
+
+      // We add an empty geojson source and layer that we'll populate
+      // with the results of the geocoding search when appropriate.
+      this.map.addSource('geocoding-result-point', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
+
+      this.map.addLayer({
+        id: 'geocoding-result',
+        source: 'geocoding-result-point',
+        type: 'symbol',
+        layout: {
+          'icon-image': 'red-waypoint',
+          'icon-size': 0.25,
+        },
+      });
+
+      geocoder.on('result', function(ev) {
+        geocoder._map
+          .getSource('geocoding-result-point')
+          .setData(ev.result.geometry);
+      });
+
       // Add city council districts as a contextual layer.
       this.map.addSource('cityCounilDistricts-polygon', {
         type: 'geojson',
@@ -72,6 +163,26 @@ class Map extends React.Component {
         source: 'cityCounilDistricts-polygon',
         paint: {
           'line-color': '#091F2F',
+        },
+      });
+
+      // Add street work as a layer.
+      this.map.addSource('publicWorksStreets-line', {
+        type: 'geojson',
+        data: `${public_works_streets_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      });
+
+      this.map.addLayer({
+        id: 'publicWorksStreets',
+        type: 'line',
+        source: 'publicWorksStreets-line',
+        paint: {
+          'line-color': '#091F2F',
+          // Make line width larger as we zoom in.
+          'line-width': { stops: [[10, 1], [11, 2], [20, 6]] },
+        },
+        layout: {
+          'line-cap': 'round',
         },
       });
 
@@ -118,59 +229,112 @@ class Map extends React.Component {
           },
         },
       });
+
+      // Since we've got points and lines on the map and we want features
+      // of both geometries to get highlighted when a user clicks on them,
+      // we add two more layers: a highlight-point layer and a highlight-line
+      // layer.
+
+      // Both layers stary out as empty, we style them here then add
+      // data to them when a user clicks on a feature.
+      this.map.addSource('highlight-point', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
+
+      this.map.addLayer({
+        id: 'highlight-point',
+        source: 'highlight-point',
+        type: 'circle',
+        paint: {
+          'circle-radius': 6,
+          'circle-color': '#FB4D42',
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#091F2F',
+        },
+      });
+
+      this.map.addSource('highlight-line', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
+
+      this.map.addLayer({
+        id: 'highlight-line',
+        source: 'highlight-line',
+        type: 'line',
+        paint: {
+          'line-width': 6,
+          'line-color': '#FB4D42',
+        },
+        layout: {
+          'line-cap': 'round',
+        },
+      });
     });
 
-    // Add pop-ups to map
+    // We do a few things when a user clicks:
+    // 1. Unhighlight anything that was previously highlighted.
+    // 2. Highlight the feature the user clicked on and center the
+    //    map on it.
+    // 3. Update state so we can show a table populated with information
+    //    about the clicked feautre.
+
     this.map.on('click', e => {
       // Budget aggregates the data so there is only one project per
       // feature (no projects overlap eachother), so we only grab the
       // first feature clicked on.
       const feature = this.map.queryRenderedFeatures(e.point)[0];
-      const dataset = feature.layer.id;
-      // Feature properties can differ based on the data selected.
-      const properties =
-        dataset == 'budgetFacilities'
-          ? [
-              feature.properties.Project_Title,
-              feature.properties.Project_Description,
-              feature.properties.Publish_Status,
-              feature.properties.Total_Budget,
-              feature.properties.Department,
-              feature.properties.Cabinet,
-            ]
-          : [
-              // Set the properties for publicWorksRamps.
-              feature.properties.Street,
-              feature.properties.NAME,
-              feature.properties.CITYCODE,
-              feature.properties.CONDITION,
-            ];
 
-      new mapboxgl.Popup({ closeOnClick: true })
-        .setLngLat(feature.geometry.coordinates)
-        // We create HTML elements for the populated properties.
-        .setHTML(
-          `<div style="min-width: 200px; max-width: 250px">
-        <div>
-            <ul class="dl dl--sm">
-              <li class="dl-i dl-i--b">
-                <div class="dl-d">${properties[0]}</div>
-              </li>        
-              <li class="dl-i dl-i--b">
-                <div class="dl-t">
-                ${properties.map(property => `${property}`).join('<br/>')}
-                </div>
-              </li>
-            </ul>
-        </div>`
-        )
-        .addTo(this.map);
+      this.map.setLayoutProperty('highlight-point', 'visibility', 'none');
+      this.map.setLayoutProperty('highlight-line', 'visibility', 'none');
+
+      // We don't want the red waypoint icon to highlight if a user clicks
+      // on it, so we first check to make sure the user clicked on a feature
+      // then we check to make sure that feature isn't the geocoding result.
+      if (feature && feature.layer.id != 'geocoding-result') {
+        const coordinates = [e.lngLat.lng, e.lngLat.lat];
+        const highlightLayer =
+          feature.layer.id == 'publicWorksStreets'
+            ? 'highlight-line'
+            : 'highlight-point';
+        this.map.setLayoutProperty(highlightLayer, 'visibility', 'visible');
+        this.map.getSource(highlightLayer).setData(feature.geometry);
+
+        // We want the map to center on the clicked point. Because we have
+        // the pop-up display as a div in the bottom section of the map, we
+        // do a little math on the latitude to adjust the map's "center".
+        this.map.flyTo({
+          center: [
+            coordinates[0],
+            coordinates[1] +
+              0.5 *
+                0.33 *
+                (this.map.getBounds().getSouth() -
+                  this.map.getBounds().getNorth()),
+          ],
+        });
+
+        this.setState({
+          clickedFeatureDataset: feature.layer.id,
+          clickedFeatureProperties: feature.properties,
+          showTable: true,
+        });
+      } else {
+        this.setState({ showTable: false });
+      }
     });
 
-    // When we scroll over a point, change the mouse to a pointer.
+    // When we scroll over a clickable feature, change the mouse to a pointer.
     this.map.on('mousemove', e => {
       const features = this.map.queryRenderedFeatures(e.point, {
-        layers: ['budgetFacilities', 'publicWorksRamps'],
+        layers: ['budgetFacilities', 'publicWorksRamps', 'publicWorksStreets'],
       });
 
       features.length > 0
@@ -184,15 +348,26 @@ class Map extends React.Component {
     if (prevProps.cabinetSelection !== this.props.cabinetSelection) {
       if (this.props.cabinetSelection == 'All') {
         this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'publicWorksStreets',
+          'visibility',
+          'visible'
+        );
         this.map.setFilter('budgetFacilities', ['all']);
-        // The public works data is stored in a different layer, but is part of the
+        // The public works data is stored in two different layers, but is part of the
         // 'Streets' cabinet. When 'Streets' is selected, we make the public works
         // layer visible and turn it off when other cabinets are selected.
       } else if (this.props.cabinetSelection == 'Streets') {
         this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'publicWorksStreets',
+          'visibility',
+          'visible'
+        );
         this.map.setFilter('budgetFacilities', ['==', 'Cabinet', 'Streets']);
       } else {
         this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'none');
+        this.map.setLayoutProperty('publicWorksStreets', 'visibility', 'none');
         this.map.setFilter('budgetFacilities', [
           '==',
           'Cabinet',
@@ -210,6 +385,11 @@ class Map extends React.Component {
     return (
       <div>
         {/* make map take up entire viewport with room for the navbars */}
+        <Table
+          dataset={this.state.clickedFeatureDataset}
+          properties={this.state.clickedFeatureProperties}
+          visible={this.state.showTable}
+        />
         <div
           style={{ height: 'calc(100vh - 125px)' }}
           ref={el => (this.mapContainer = el)}

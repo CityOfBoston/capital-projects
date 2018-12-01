@@ -6,21 +6,23 @@ export default function Filters(props) {
   return (
     <div>
       <Row className="ml-1">
-        <h5 className="mt-3 font-weight-bold text-uppercase">
-          Filter Projects:
+        <h5 className="mt-3 sel-l" style={{ fontSize: '1.35em' }}>
+          Filter Projects
         </h5>
       </Row>
-      <Card className="border-0">
+      <Card className="border-0 pt-2 ml-1 mr-2">
         <Form>
+          <div id="geocoder" style={{ width: '100%' }} />
           <div className="sel">
-            <div className="sel-c sel-c--fw">
+            <h5 className="sel-l sel-l--mt000">Filter by cabinet:</h5>
+            <div className="sel-c sel-c--thin">
               <Input
                 type="select"
                 name="selectCabinet"
                 id="selectCabinet"
                 onChange={props.cabinetChange}
                 value={props.cabinetSelection}
-                className="sef-f"
+                className="sel-f sel-f--thin"
               >
                 <option>All</option>
                 <option>Arts & Culture</option>

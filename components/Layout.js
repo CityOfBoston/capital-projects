@@ -31,7 +31,7 @@ export default class Layout extends React.Component {
             content="width=device-width, initial-scale=1.0"
           />
         </Head>
-        {/* Make sure the heigh of the body element is the entire view port */}
+        {/* Make sure the heigh of the body element is the entire view port. */}
         <style global jsx>{`
           // set fonts for elements
           body,
@@ -55,12 +55,13 @@ export default class Layout extends React.Component {
           }
 
           // pop-up styles
-          .dl-t {
-            width: 50%;
-            clear: none;
-          }
           .dl-d {
-            width: 100%;
+            clear: none;
+            width: 25%;
+          }
+          .dl-t {
+            clear: none;
+            width: 75%;
           }
           .dl-i {
             padding: 0.2rem !important;
@@ -71,20 +72,66 @@ export default class Layout extends React.Component {
             border: 3px solid #091f2f;
             font-family: 'Lora', serif;
             font-style: italic;
+            border-radius: 0px;
+          }
+
+          // geocoder style
+          .mapboxgl-ctrl-geocoder input {
+            background-image: url(https://www.boston.gov/crispus/images/public/icons/search.svg);
+            background-repeat: no-repeat;
+            background-color: transparent;
+            background-position: right;
+            background-size: 20px 20px;
+            position: relative;
+            height: auto;
+            border: none;
+            border-bottom: 2px solid #091f2f;
+            border-radius: 0;
+            box-shadow: none;
+            font-family: 'Lora';
+            font-style: italic;
+            font-size: 16px;
+            min-width: 100%;
+          }
+
+          .geocoder-icon {
+            visibility: hidden;
+          }
+
+          .suggestions {
+            font-family: Lora;
+            font-style: italic;
+            position: absolute;
+            z-index: 10000;
+            background-color: white;
+            border: 1px solid #091f2f;
+            padding: 0;
+            background-color: #f2f2f2;
+          }
+
+          .suggestions li {
+            list-style-type: none;
+            border-bottom: 1px solid #d2d2d2;
+            padding: 5px;
+          }
+
+          .suggestions li:hover {
+            background-color: #e0e0e0;
           }
         `}</style>
-        {/* set container div with room for navbar  */}
+        {/* Set container div with room for navbar. */}
         <div style={{ minHeight: 'calc(100vh - 125px)' }}>
           <Navbar>
             <div>
-              <h2
+              <h1
                 className="text-uppercase font-weight-bold m-0 pr-2"
                 style={{
                   display: 'inline-block',
+                  lineHeight: '.9em',
                 }}
               >
                 Capital Projects
-              </h2>
+              </h1>
               <p
                 className="font-italic m-0"
                 style={{
@@ -94,20 +141,20 @@ export default class Layout extends React.Component {
                 Fiscal Years 2019-2023
               </p>
             </div>
-            <div className="lo">
-              <div className="lo-l">
+            <div className="">
+              <div className="">
                 <a href="https://www.boston.gov/">
                   <img
-                    src="https://patterns.boston.gov/images/public/logo.svg"
+                    src="/static/budgetCob.png"
                     alt="Boston.gov"
-                    className="lo-i"
+                    className=""
+                    style={{ height: '3em' }}
                   />
                 </a>
-                <span className="lo-t">Mayor Martin J. Walsh</span>
               </div>
             </div>
           </Navbar>
-          {/* add secondary navbar */}
+          {/* Add secondary navbar. */}
           <nav className="nv-s">
             <input
               type="checkbox"
@@ -127,9 +174,14 @@ export default class Layout extends React.Component {
                   className={`nv-s-l-a ${
                     this.props.indexPage ? 'nv-s-l-a--active' : ''
                   }`}
-                  href="/vision-zero/"
+                  href="/capital-projects/"
                 >
                   View the map
+                </a>
+              </li>
+              <li className="nv-s-l-i">
+                <a className="nv-s-l-a" href="https://data.boston.gov/">
+                  Get the data
                 </a>
               </li>
               <li className="nv-s-l-i">
@@ -137,7 +189,7 @@ export default class Layout extends React.Component {
                   className={`nv-s-l-a ${
                     this.props.aboutPage ? 'nv-s-l-a--active' : ''
                   }`}
-                  href="/vision-zero/about"
+                  href="/capital-projects/about"
                 >
                   About
                 </a>
@@ -146,7 +198,7 @@ export default class Layout extends React.Component {
           </nav>
           {this.props.children}
         </div>
-        {/* add footer */}
+        {/* Add footer. */}
         <footer
           className="ft"
           style={{
