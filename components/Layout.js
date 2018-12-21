@@ -77,7 +77,7 @@ export default class Layout extends React.Component {
 
           // geocoder style
           .mapboxgl-ctrl-geocoder input {
-            background-image: url(https://www.boston.gov/crispus/images/public/icons/search.svg);
+            background-image: url(https://patterns.boston.gov/images/public/icons/search.svg);
             background-repeat: no-repeat;
             background-color: transparent;
             background-position: right;

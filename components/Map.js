@@ -85,7 +85,7 @@ class Map extends React.Component {
     const geocoder = new MapboxGeocoder({
       accessToken: accessToken,
       flyTo: true,
-      placeholder: 'Show projects near...',
+      placeholder: 'Show projects near…',
       country: 'us',
       // We set a bounding box so that the geocoder only looks for
       // matches in and around Boston, MA.
