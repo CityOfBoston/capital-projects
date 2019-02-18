@@ -145,7 +145,7 @@ export default class Layout extends React.Component {
               <div className="">
                 <a href="https://www.boston.gov/">
                   <img
-                    src="/static/budgetCob.png"
+                    src="/capital-projects/static/budgetCob.png"
                     alt="Boston.gov"
                     className=""
                     style={{ height: '3em' }}

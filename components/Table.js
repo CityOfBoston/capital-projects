@@ -16,7 +16,7 @@ export default function Table(props) {
           background: 'white',
           visibility: props.visible ? 'visible' : 'hidden',
           width: '100%',
-          minHeight: '40%',
+          minHeight: '45%',
         }}
       >
         <div className="mb-3">
@@ -61,7 +61,7 @@ export default function Table(props) {
           background: 'white',
           visibility: props.visible ? 'visible' : 'hidden',
           width: '100%',
-          minHeight: '40%',
+          minHeight: '45%',
         }}
       >
         <div>
@@ -89,14 +89,14 @@ export default function Table(props) {
               </a>{' '}
               View our{' '}
               <a href="https://data.boston.gov/dataset/pedestrian-ramp-inventory">
-                inventory of pedestiran ramps.
+                inventory of pedestrian ramps.
               </a>
             </p>
           </ul>
         </div>
       </div>
     );
-  } else if (props.dataset == 'pwdStreets') {
+  } else if (props.dataset == 'publicWorksStreets') {
     return (
       <div
         style={{
@@ -106,7 +106,7 @@ export default function Table(props) {
           background: 'white',
           visibility: props.visible ? 'visible' : 'hidden',
           width: '100%',
-          minHeight: '40%',
+          minHeight: '45%',
         }}
       >
         <div>
