@@ -16,10 +16,10 @@ export default function Table(props) {
           background: 'white',
           visibility: props.visible ? 'visible' : 'hidden',
           width: '100%',
-          minHeight: '40%',
+          minHeight: '45%',
         }}
       >
-        <div className="mb-3">
+        <div className="mb-3" style={{ margin: '10px' }}>
           <ul className="dl">
             <li className="dl-i">
               <h4 className="text-uppercase font-weight-bold mb-1 mt-2">
@@ -61,10 +61,10 @@ export default function Table(props) {
           background: 'white',
           visibility: props.visible ? 'visible' : 'hidden',
           width: '100%',
-          minHeight: '40%',
+          minHeight: '45%',
         }}
       >
-        <div>
+        <div style={{ margin: '10px' }}>
           <ul className="dl">
             <li className="dl-i">
               <h4 className="text-uppercase font-weight-bold mb-1 mt-2">
@@ -89,14 +89,14 @@ export default function Table(props) {
               </a>{' '}
               View our{' '}
               <a href="https://data.boston.gov/dataset/pedestrian-ramp-inventory">
-                inventory of pedestiran ramps.
+                inventory of pedestrian ramps.
               </a>
             </p>
           </ul>
         </div>
       </div>
     );
-  } else if (props.dataset == 'pwdStreets') {
+  } else if (props.dataset == 'publicWorksStreets') {
     return (
       <div
         style={{
@@ -106,10 +106,10 @@ export default function Table(props) {
           background: 'white',
           visibility: props.visible ? 'visible' : 'hidden',
           width: '100%',
-          minHeight: '40%',
+          minHeight: '45%',
         }}
       >
-        <div>
+        <div style={{ margin: '10px' }}>
           <ul className="dl">
             <li className="dl-i">
               <h4 className="text-uppercase font-weight-bold mb-1 mt-2">
@@ -121,6 +121,73 @@ export default function Table(props) {
               {props.properties.URL ? (
                 <a href={props.properties.URL}>More information.</a>
               ) : null}
+            </p>
+          </ul>
+        </div>
+      </div>
+    );
+  } else if (props.dataset == 'slowStreets') {
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: 1000,
+          bottom: 0,
+          background: 'white',
+          visibility: props.visible ? 'visible' : 'hidden',
+          width: '100%',
+          minHeight: '45%',
+        }}
+      >
+        <div style={{ margin: '10px' }}>
+          <ul className="dl">
+            <li className="dl-i">
+              <h4 className="text-uppercase font-weight-bold mb-1 mt-2">
+                {props.properties['Location']}
+              </h4>
+            </li>
+            <p className="cd-d">
+              The{' '}
+              <a href="https://www.boston.gov/departments/transportation/neighborhood-slow-streets">
+                Neighborhood Slow Streets
+              </a>{' '}
+              program attempts to reduce the number of and severity of crashes
+              on residential streets.
+            </p>
+            <p className="cd-d">
+              The program is a City initiative to slow traffic speeds and
+              improve safety on residential streets within a specific area. When
+              a neighborhood is part of the program, the speed limit on its
+              residential streets will be 20 mph.
+            </p>
+          </ul>
+        </div>
+      </div>
+    );
+  } else if (props.dataset == 'walkableStreets') {
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: 1000,
+          bottom: 0,
+          background: 'white',
+          visibility: props.visible ? 'visible' : 'hidden',
+          width: '100%',
+          minHeight: '45%',
+        }}
+      >
+        <div style={{ margin: '10px' }}>
+          <ul className="dl">
+            <li className="dl-i">
+              <h4 className="text-uppercase font-weight-bold mb-1 mt-2">
+                {props.properties['DISTRICT']}
+              </h4>
+            </li>
+            <p className="cd-d">
+              Walkable Streets is a sidewalk improvement program designed to
+              target key neighborhood streets and corridors by reconstructing
+              longer, contiguous sidewalk sections.
             </p>
           </ul>
         </div>

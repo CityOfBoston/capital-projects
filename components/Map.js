@@ -9,17 +9,36 @@ const MapboxGeocoder = process.browser
   ? require('@mapbox/mapbox-gl-geocoder')
   : null;
 
-const projects_url =
+const PROJECTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/FY2019_FY2023_Budget_Facilities_ADOPTED/FeatureServer/0';
 
-const public_works_ramps_url =
+const PUBLIC_WORKS_RAMPS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/2';
 
-const public_works_streets_url =
+const PUBLIC_WORKS_STREETS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcGIS/rest/services/pwd_capitalProjects_test/FeatureServer/0';
 
-const city_council_districts_url =
+const CITY_COUNCIL_DISTRICTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/City_Council_Districts_View/FeatureServer/0';
+
+const WALKABLE_STREETS_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/7';
+
+const SLOW_STREETS_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/8';
+
+// When a user clicks on a feature, we have to highlight it according to
+// the data type. We use this function below to determine which highlight
+// layer should be used based on what layer a user clicked on.
+const getHighlightLayer = layer => {
+  if (layer == 'publicWorksStreets') {
+    return 'highlight-line';
+  } else if (layer == 'slowStreets' || layer == 'walkableStreets') {
+    return 'highlight-polygon';
+  } else {
+    return 'highlight-point';
+  }
+};
 
 class Map extends React.Component {
   constructor(props) {
@@ -35,8 +54,8 @@ class Map extends React.Component {
   componentDidMount() {
     this.map = new mapboxgl.Map({
       container: this.mapContainer,
-      center: [-71.066834, 42.315642],
-      zoom: 11,
+      center: [-71.068, 42.34],
+      zoom: 13,
       maxZoom: 19,
       style: {
         version: 8,
@@ -122,8 +141,9 @@ class Map extends React.Component {
       // to sit under the other layers to keep it from interfering with click
       // events on the other layers.
       // Next is City Council Districts as that is a contextual layer. The
-      // public works street projects, public works ramps, budget
-      // facilities, and highlight layers are loaded next in that order.
+      // walkable streets, neighborhood slow streets, public works street
+      // projects, public works ramps, budget facilities, and highlight
+      // layers are loaded next in that order.
 
       // We add an empty geojson source and layer that we'll populate
       // with the results of the geocoding search when appropriate.
@@ -154,7 +174,7 @@ class Map extends React.Component {
       // Add city council districts as a contextual layer.
       this.map.addSource('cityCounilDistricts-polygon', {
         type: 'geojson',
-        data: `${city_council_districts_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${CITY_COUNCIL_DISTRICTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -166,10 +186,56 @@ class Map extends React.Component {
         },
       });
 
+      // Add walkable streets as a layer.
+      this.map.addSource('walkableStreets-polygon', {
+        type: 'geojson',
+        data: `${WALKABLE_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      });
+
+      this.map.addLayer({
+        id: 'walkableStreets',
+        type: 'fill',
+        source: 'walkableStreets-polygon',
+        paint: {
+          'fill-color': '#091F2F',
+          'fill-outline-color': '#091F2F',
+        },
+      });
+
+      // Add neighborhood slow streets as a layer.
+      this.map.addSource('slowStreets-polygon', {
+        type: 'geojson',
+        data: `${SLOW_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      });
+
+      this.map.addLayer({
+        id: 'slowStreets',
+        type: 'fill',
+        source: 'slowStreets-polygon',
+        paint: {
+          'fill-color': '#f46d43',
+          'fill-outline-color': '#091F2F',
+          'fill-opacity': 0.5,
+        },
+      });
+
+      // Mapbox doesn't have the functionality to give a polygon (or layer with
+      // type: 'fill') an outline larger an 1px. To do that, we have to add a new
+      // layer with the type: 'line' that uses the same source as the original layer.
+      this.map.addLayer({
+        id: 'slowStreets-outline',
+        type: 'line',
+        source: 'slowStreets-polygon',
+        paint: {
+          'line-color': '#f46d43',
+          'line-width': { stops: [[10, 1], [11, 1.5], [20, 6]] },
+        },
+      });
+
       // Add street work as a layer.
       this.map.addSource('publicWorksStreets-line', {
         type: 'geojson',
-        data: `${public_works_streets_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${PUBLIC_WORKS_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -189,7 +255,7 @@ class Map extends React.Component {
       // Add the public works ramps as a layer.
       this.map.addSource('publicWorksRamps-point', {
         type: 'geojson',
-        data: `${public_works_ramps_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${PUBLIC_WORKS_RAMPS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -200,10 +266,10 @@ class Map extends React.Component {
           'circle-stroke-width': 1,
           'circle-stroke-color': '#091F2F',
           'circle-color': '#c1c1c1',
-          // Make circles larger as the user zooms from 12 to 22.
+          // Make circles larger as the user zooms from 12 to 17.
           'circle-radius': {
             base: 3,
-            stops: [[12, 3], [17, 10]],
+            stops: [[12, 4], [17, 10]],
           },
         },
       });
@@ -211,7 +277,7 @@ class Map extends React.Component {
       // Add the budget facilities as a layer.
       this.map.addSource('budgetFacilities-point', {
         type: 'geojson',
-        data: `${projects_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${PROJECTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -221,21 +287,40 @@ class Map extends React.Component {
         paint: {
           'circle-stroke-width': 1,
           'circle-stroke-color': '#091F2F',
-          'circle-color': '#288BE4',
-          // Make circles larger as the user zooms from 12 to 22.
+          // We color the circles by project status.
+          'circle-color': [
+            'match',
+            ['get', 'Publish_Status'],
+            'Annual Program',
+            '#66c2a5',
+            'Ongoing Program',
+            '#66c2a5',
+            'In Construction',
+            '#3e6987',
+            'In Design',
+            '#288BE4',
+            'New Project',
+            '#fdae61',
+            'Study Underway',
+            '#fee08b',
+            'To Be Scheduled',
+            '#5e4fa2',
+            /* other */ '#ccc',
+          ],
+          // Make circles larger as the user zooms from 12 to 17.
           'circle-radius': {
             base: 4,
-            stops: [[12, 4], [17, 10]],
+            stops: [[12, 5.5], [17, 10]],
           },
         },
       });
 
-      // Since we've got points and lines on the map and we want features
-      // of both geometries to get highlighted when a user clicks on them,
-      // we add two more layers: a highlight-point layer and a highlight-line
-      // layer.
+      // Since we've got points, lines, and polygons on the map and we want features
+      // of all geometries to get highlighted when a user clicks on them,
+      // we add three more layers: a highlight-point layer, a highlight-line
+      // layer, and a highlight-polygon layer.
 
-      // Both layers stary out as empty, we style them here then add
+      // All layers stary out as empty, we style them here then add
       // data to them when a user clicks on a feature.
       this.map.addSource('highlight-point', {
         type: 'geojson',
@@ -277,6 +362,25 @@ class Map extends React.Component {
           'line-cap': 'round',
         },
       });
+
+      this.map.addSource('highlight-polygon', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      });
+
+      this.map.addLayer({
+        id: 'highlight-polygon',
+        source: 'highlight-polygon',
+        type: 'fill',
+        paint: {
+          'fill-color': '#FB4D42',
+          'fill-outline-color': '#091F2F',
+          'fill-opacity': 0.7,
+        },
+      });
     });
 
     // We do a few things when a user clicks:
@@ -294,16 +398,21 @@ class Map extends React.Component {
 
       this.map.setLayoutProperty('highlight-point', 'visibility', 'none');
       this.map.setLayoutProperty('highlight-line', 'visibility', 'none');
+      this.map.setLayoutProperty('highlight-polygon', 'visibility', 'none');
 
       // We don't want the red waypoint icon to highlight if a user clicks
       // on it, so we first check to make sure the user clicked on a feature
       // then we check to make sure that feature isn't the geocoding result.
-      if (feature && feature.layer.id != 'geocoding-result') {
+      // The same goes for the City Council Layer and the slow streets outline
+      // layer.
+      if (
+        feature &&
+        feature.layer.id != 'geocoding-result' &&
+        feature.layer.id != 'cityCouncilDistricts' &&
+        feature.layer.id != 'slowStreets-outline'
+      ) {
         const coordinates = [e.lngLat.lng, e.lngLat.lat];
-        const highlightLayer =
-          feature.layer.id == 'publicWorksStreets'
-            ? 'highlight-line'
-            : 'highlight-point';
+        const highlightLayer = getHighlightLayer(feature.layer.id);
         this.map.setLayoutProperty(highlightLayer, 'visibility', 'visible');
         this.map.getSource(highlightLayer).setData(feature.geometry);
 
@@ -334,7 +443,13 @@ class Map extends React.Component {
     // When we scroll over a clickable feature, change the mouse to a pointer.
     this.map.on('mousemove', e => {
       const features = this.map.queryRenderedFeatures(e.point, {
-        layers: ['budgetFacilities', 'publicWorksRamps', 'publicWorksStreets'],
+        layers: [
+          'budgetFacilities',
+          'publicWorksRamps',
+          'publicWorksStreets',
+          'walkableStreets',
+          'slowStreets',
+        ],
       });
 
       features.length > 0
@@ -344,6 +459,11 @@ class Map extends React.Component {
   }
 
   // When the cabinet selection changes, we update the map accordingly.
+  // The public works data is stored in two different layers, but is part of the
+  // 'Streets' cabinet. Same goes for the transportation data (walkable streets
+  // and slow streets). When 'Streets' is selected, we make the public works
+  // and transportation layers visible and turn them off when other cabinets
+  // are selected.
   componentDidUpdate(prevProps) {
     if (prevProps.cabinetSelection !== this.props.cabinetSelection) {
       if (this.props.cabinetSelection == 'All') {
@@ -353,10 +473,14 @@ class Map extends React.Component {
           'visibility',
           'visible'
         );
+        this.map.setLayoutProperty('walkableStreets', 'visibility', 'visible');
+        this.map.setLayoutProperty('slowStreets', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'slowStreets-outline',
+          'visibility',
+          'visible'
+        );
         this.map.setFilter('budgetFacilities', ['all']);
-        // The public works data is stored in two different layers, but is part of the
-        // 'Streets' cabinet. When 'Streets' is selected, we make the public works
-        // layer visible and turn it off when other cabinets are selected.
       } else if (this.props.cabinetSelection == 'Streets') {
         this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'visible');
         this.map.setLayoutProperty(
@@ -364,10 +488,20 @@ class Map extends React.Component {
           'visibility',
           'visible'
         );
+        this.map.setLayoutProperty('walkableStreets', 'visibility', 'visible');
+        this.map.setLayoutProperty('slowStreets', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'slowStreets-outline',
+          'visibility',
+          'visible'
+        );
         this.map.setFilter('budgetFacilities', ['==', 'Cabinet', 'Streets']);
       } else {
         this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'none');
         this.map.setLayoutProperty('publicWorksStreets', 'visibility', 'none');
+        this.map.setLayoutProperty('walkableStreets', 'visibility', 'none');
+        this.map.setLayoutProperty('slowStreets', 'visibility', 'none');
+        this.map.setLayoutProperty('slowStreets-outline', 'visibility', 'none');
         this.map.setFilter('budgetFacilities', [
           '==',
           'Cabinet',
