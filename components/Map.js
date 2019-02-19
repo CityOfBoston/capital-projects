@@ -9,22 +9,22 @@ const MapboxGeocoder = process.browser
   ? require('@mapbox/mapbox-gl-geocoder')
   : null;
 
-const projects_url =
+const PROJECTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/FY2019_FY2023_Budget_Facilities_ADOPTED/FeatureServer/0';
 
-const public_works_ramps_url =
+const PUBLIC_WORKS_RAMPS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/2';
 
-const public_works_streets_url =
+const PUBLIC_WORKS_STREETS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcGIS/rest/services/pwd_capitalProjects_test/FeatureServer/0';
 
-const city_council_districts_url =
+const CITY_COUNCIL_DISTRICTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/City_Council_Districts_View/FeatureServer/0';
 
-const walkable_streets_url =
+const WALKABLE_STREETS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/7';
 
-const slow_streets_url =
+const SLOW_STREETS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/8';
 
 // When a user clicks on a feature, we have to highlight it according to
@@ -32,14 +32,11 @@ const slow_streets_url =
 // layer should be used based on what layer a user clicked on.
 const getHighlightLayer = layer => {
   if (layer == 'publicWorksStreets') {
-    const highlightLayer = 'highlight-line';
-    return highlightLayer;
+    return 'highlight-line';
   } else if (layer == 'slowStreets' || layer == 'walkableStreets') {
-    const highlightLayer = 'highlight-polygon';
-    return highlightLayer;
+    return 'highlight-polygon';
   } else {
-    const highlightLayer = 'highlight-point';
-    return highlightLayer;
+    return 'highlight-point';
   }
 };
 
@@ -177,7 +174,7 @@ class Map extends React.Component {
       // Add city council districts as a contextual layer.
       this.map.addSource('cityCounilDistricts-polygon', {
         type: 'geojson',
-        data: `${city_council_districts_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${CITY_COUNCIL_DISTRICTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -192,7 +189,7 @@ class Map extends React.Component {
       // Add walkable streets as a layer.
       this.map.addSource('walkableStreets-polygon', {
         type: 'geojson',
-        data: `${walkable_streets_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${WALKABLE_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -208,7 +205,7 @@ class Map extends React.Component {
       // Add neighborhood slow streets as a layer.
       this.map.addSource('slowStreets-polygon', {
         type: 'geojson',
-        data: `${slow_streets_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${SLOW_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -238,7 +235,7 @@ class Map extends React.Component {
       // Add street work as a layer.
       this.map.addSource('publicWorksStreets-line', {
         type: 'geojson',
-        data: `${public_works_streets_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${PUBLIC_WORKS_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -258,7 +255,7 @@ class Map extends React.Component {
       // Add the public works ramps as a layer.
       this.map.addSource('publicWorksRamps-point', {
         type: 'geojson',
-        data: `${public_works_ramps_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${PUBLIC_WORKS_RAMPS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -280,7 +277,7 @@ class Map extends React.Component {
       // Add the budget facilities as a layer.
       this.map.addSource('budgetFacilities-point', {
         type: 'geojson',
-        data: `${projects_url}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${PROJECTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -465,7 +462,7 @@ class Map extends React.Component {
   // The public works data is stored in two different layers, but is part of the
   // 'Streets' cabinet. Same goes for the transportation data (walkable streets
   // and slow streets). When 'Streets' is selected, we make the public works
-  // and transportation layers visible and turn it off when other cabinets
+  // and transportation layers visible and turn them off when other cabinets
   // are selected.
   componentDidUpdate(prevProps) {
     if (prevProps.cabinetSelection !== this.props.cabinetSelection) {
