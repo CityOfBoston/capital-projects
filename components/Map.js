@@ -219,9 +219,12 @@ class Map extends React.Component {
         },
       });
 
+<<<<<<< HEAD
       // Mapbox doesn't have the functionality to give a polygon (or layer with
       // type: 'fill') an outline larger an 1px. To do that, we have to add a new
       // layer with the type: 'line' that uses the same source as the original layer.
+=======
+>>>>>>> 01ecc5a146444f3a0d5cbcd77c36c7a29f97c698
       this.map.addLayer({
         id: 'slowStreets-outline',
         type: 'line',
@@ -403,6 +406,7 @@ class Map extends React.Component {
       // We don't want the red waypoint icon to highlight if a user clicks
       // on it, so we first check to make sure the user clicked on a feature
       // then we check to make sure that feature isn't the geocoding result.
+<<<<<<< HEAD
       // The same goes for the City Council Layer and the slow streets outline
       // layer.
       if (
@@ -410,6 +414,13 @@ class Map extends React.Component {
         feature.layer.id != 'geocoding-result' &&
         feature.layer.id != 'cityCouncilDistricts' &&
         feature.layer.id != 'slowStreets-outline'
+=======
+      // The same goes for the City Council Layer.
+      if (
+        feature &&
+        feature.layer.id != 'geocoding-result' &&
+        feature.layer.id != 'cityCouncilDistricts'
+>>>>>>> 01ecc5a146444f3a0d5cbcd77c36c7a29f97c698
       ) {
         const coordinates = [e.lngLat.lng, e.lngLat.lat];
         const highlightLayer = getHighlightLayer(feature.layer.id);
@@ -475,12 +486,21 @@ class Map extends React.Component {
         );
         this.map.setLayoutProperty('walkableStreets', 'visibility', 'visible');
         this.map.setLayoutProperty('slowStreets', 'visibility', 'visible');
+<<<<<<< HEAD
         this.map.setLayoutProperty(
           'slowStreets-outline',
           'visibility',
           'visible'
         );
         this.map.setFilter('budgetFacilities', ['all']);
+=======
+        this.map.setFilter('budgetFacilities', ['all']);
+        // The public works data is stored in two different layers, but is part of the
+        // 'Streets' cabinet. Same goes for the transportation data (walkable streets
+        // and slow streest). When 'Streets' is selected, we make the public works
+        // and transportation layers visible and turn it off when other cabinets
+        // are selected.
+>>>>>>> 01ecc5a146444f3a0d5cbcd77c36c7a29f97c698
       } else if (this.props.cabinetSelection == 'Streets') {
         this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'visible');
         this.map.setLayoutProperty(
@@ -490,18 +510,24 @@ class Map extends React.Component {
         );
         this.map.setLayoutProperty('walkableStreets', 'visibility', 'visible');
         this.map.setLayoutProperty('slowStreets', 'visibility', 'visible');
+<<<<<<< HEAD
         this.map.setLayoutProperty(
           'slowStreets-outline',
           'visibility',
           'visible'
         );
+=======
+>>>>>>> 01ecc5a146444f3a0d5cbcd77c36c7a29f97c698
         this.map.setFilter('budgetFacilities', ['==', 'Cabinet', 'Streets']);
       } else {
         this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'none');
         this.map.setLayoutProperty('publicWorksStreets', 'visibility', 'none');
         this.map.setLayoutProperty('walkableStreets', 'visibility', 'none');
         this.map.setLayoutProperty('slowStreets', 'visibility', 'none');
+<<<<<<< HEAD
         this.map.setLayoutProperty('slowStreets-outline', 'visibility', 'none');
+=======
+>>>>>>> 01ecc5a146444f3a0d5cbcd77c36c7a29f97c698
         this.map.setFilter('budgetFacilities', [
           '==',
           'Cabinet',
