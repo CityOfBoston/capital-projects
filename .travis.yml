@@ -1,0 +1,37 @@
+language: node_js
+node_js:
+  - '8'
+cache:
+  directories:
+    - node_modules
+branches:
+  only:
+    - production
+    - staging
+install:
+  - npm install
+script:
+  - npm run build
+deploy:
+  - provider: s3
+    skip_cleanup: true
+    access_key_id: '$AWS_ACCESS_KEY_ID'
+    secret_access_key: '$AWS_SECRET_ACCESS_KEY'
+    bucket: cob-digital-apps-staging-static
+    acl: public_read
+    region: '$AWS_DEFAULT_REGION'
+    local_dir: out
+    upload-dir: capital-projects
+    on:
+      branch: staging
+  - provider: s3
+    skip_cleanup: true
+    access_key_id: '$AWS_ACCESS_KEY_ID'
+    secret_access_key: '$AWS_SECRET_ACCESS_KEY'
+    bucket: cob-digital-apps-prod-static
+    acl: public_read
+    region: '$AWS_DEFAULT_REGION'
+    local_dir: out
+    upload-dir: capital-projects
+    on:
+      branch: production
