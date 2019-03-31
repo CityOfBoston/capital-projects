@@ -1,20 +1,23 @@
 import React from 'react';
-import { Card, Row, Form, Input } from 'reactstrap';
+import { Card, Form, Input } from 'reactstrap';
 import PropTypes from 'prop-types';
 
 export default function Filters(props) {
   return (
     <div>
-      <Row className="ml-1">
-        <h5 className="mt-3 sel-l" style={{ fontSize: '1.35em' }}>
-          Filter Projects
-        </h5>
-      </Row>
+      <Card className="border-0 pt-4 ml-1 mr-2">
+        <div id="geocoder" style={{ width: '100%' }} />
+      </Card>
+
       <Card className="border-0 pt-2 ml-1 mr-2">
-        <Form>
-          <div id="geocoder" style={{ width: '100%' }} />
+        <h5 className="text-uppercase" style={{ letterSpacing: '1px' }}>
+          Filter crashes
+        </h5>
+        <Form className="mt-2">
           <div className="sel">
-            <h5 className="sel-l sel-l--mt000">Filter by cabinet:</h5>
+            <h5 className="text-uppercase" style={{ fontSize: '1em' }}>
+              by Cabinet:
+            </h5>
             <div className="sel-c sel-c--thin">
               <Input
                 type="select"

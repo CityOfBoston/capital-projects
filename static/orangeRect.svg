@@ -1,0 +1,9 @@
+<svg width="25" height="25" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>background</title>
+  <rect fill="#F18821" stroke="#c6701b" stroke-width="2" id="canvas_background" height="25" width="25" y="0" x="0"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+</svg>

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Table from './Table';
 import getConfig from 'next/config';
+import getPopupHTML from './Popup';
 
 // We can't import these server-side because they require "window"
 const mapboxgl = process.browser ? require('mapbox-gl') : null;
@@ -9,31 +10,63 @@ const MapboxGeocoder = process.browser
   ? require('@mapbox/mapbox-gl-geocoder')
   : null;
 
-const PROJECTS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/FY2019_FY2023_Budget_Facilities_ADOPTED/FeatureServer/0';
-
-const PUBLIC_WORKS_RAMPS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/2';
-
-const PUBLIC_WORKS_STREETS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcGIS/rest/services/pwd_capitalProjects_test/FeatureServer/0';
-
 const CITY_COUNCIL_DISTRICTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/City_Council_Districts_View/FeatureServer/0';
 
-const WALKABLE_STREETS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/7';
+const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_budget_facilities/FeatureServer/0`;
 
-const SLOW_STREETS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/BudgetFacilitiesFY2019/FeatureServer/8';
+const PEDESTRIAN_RAMPS_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_pedestrian_ramps/FeatureServer/0';
+
+const STREET_RECONSTRUCTION_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_street_reconstruction/FeatureServer/0';
+
+// TODO: ADD TO MAP
+const INTERSECTION_RECONSTRUCTION_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_resconstruction_intersections/FeatureServer/0';
+
+// TODO: ADD TO MAP
+const STREET_PROJECTS_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_street_capital_projects/FeatureServer/0';
+
+// TODO: ADD TO MAP
+const ARP_STREETS_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_arp_streets/FeatureServer/0';
+
+// TODO: ADD TO MAP
+const SOUTHWEST_CORRIDOR_URLS =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_south_west_corridor_crossings/FeatureServer/0';
+
+const WALKABLE_STREETS_SIDEWALKS_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_walkable_streets_sidewalk_reconstruction/FeatureServer/0';
+
+// TODO: add to map
+const SLOW_STREETS_LINES_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_btd_corridors_slow_streets/FeatureServer/0';
+
+// Separate out the colors for each status so we can more easily use them across
+// datasets.
+const STATUS_PLANNING_COLOR = '#F18821';
+const STATUS_DESIGN_COLOR = '#7D65AC';
+const STATUS_CONSTRUCTION_COLOR = '#58B652';
+const STATUS_ANNUAL_PROGRAM_COLOR = '#288BE4';
 
 // When a user clicks on a feature, we have to highlight it according to
 // the data type. We use this function below to determine which highlight
 // layer should be used based on what layer a user clicked on.
 const getHighlightLayer = layer => {
-  if (layer == 'publicWorksStreets') {
+  if (
+    layer == 'slowStreetsLines' ||
+    layer == 'streetsCapitalProjects' ||
+    layer == 'arpStreets' ||
+    layer == 'streetReconstruction' ||
+    layer == 'slowStreetsAreas-outline'
+  ) {
     return 'highlight-line';
-  } else if (layer == 'slowStreets' || layer == 'walkableStreets') {
+  } else if (
+    layer == 'walkableStreetsSidewalks' ||
+    layer == 'slowStreetsAreas'
+  ) {
     return 'highlight-polygon';
   } else {
     return 'highlight-point';
@@ -47,6 +80,7 @@ class Map extends React.Component {
     this.state = {
       clickedFeatureDataset: '',
       clickedFeatureProperties: [],
+      clickedFeature: '',
       showTable: false,
     };
   }
@@ -97,7 +131,7 @@ class Map extends React.Component {
     });
 
     // In order to add a geocoder to our map, we need a mapbox access token.
-    // We've stored that using environment variables inside out nextjs config file.
+    // We've stored that using environment variables inside our nextjs config file.
     const { publicRuntimeConfig } = getConfig();
     const accessToken = publicRuntimeConfig.MapboxAccessToken;
 
@@ -140,10 +174,6 @@ class Map extends React.Component {
       // As a result, we load the geocoding point first, as we want that
       // to sit under the other layers to keep it from interfering with click
       // events on the other layers.
-      // Next is City Council Districts as that is a contextual layer. The
-      // walkable streets, neighborhood slow streets, public works street
-      // projects, public works ramps, budget facilities, and highlight
-      // layers are loaded next in that order.
 
       // We add an empty geojson source and layer that we'll populate
       // with the results of the geocoding search when appropriate.
@@ -187,63 +217,99 @@ class Map extends React.Component {
       });
 
       // Add walkable streets as a layer.
-      this.map.addSource('walkableStreets-polygon', {
+      this.map.addSource('walkableStreetsSidewalks-polygon', {
         type: 'geojson',
-        data: `${WALKABLE_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${WALKABLE_STREETS_SIDEWALKS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
-        id: 'walkableStreets',
+        id: 'walkableStreetsSidewalks',
         type: 'fill',
-        source: 'walkableStreets-polygon',
+        source: 'walkableStreetsSidewalks-polygon',
         paint: {
-          'fill-color': '#091F2F',
-          'fill-outline-color': '#091F2F',
+          'fill-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
+          'fill-outline-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
         },
       });
 
-      // Add neighborhood slow streets as a layer.
-      this.map.addSource('slowStreets-polygon', {
+      // Add the individual streets in each neighborhood slow street as a layer.
+      this.map.addSource('slowStreetsLines-line', {
         type: 'geojson',
-        data: `${SLOW_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${SLOW_STREETS_LINES_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
-        id: 'slowStreets',
-        type: 'fill',
-        source: 'slowStreets-polygon',
-        paint: {
-          'fill-color': '#f46d43',
-          'fill-outline-color': '#091F2F',
-          'fill-opacity': 0.5,
-        },
-      });
-
-      // Mapbox doesn't have the functionality to give a polygon (or layer with
-      // type: 'fill') an outline larger an 1px. To do that, we have to add a new
-      // layer with the type: 'line' that uses the same source as the original layer.
-      this.map.addLayer({
-        id: 'slowStreets-outline',
+        id: 'slowStreetsLines',
         type: 'line',
-        source: 'slowStreets-polygon',
+        source: 'slowStreetsLines-line',
         paint: {
-          'line-color': '#f46d43',
+          'line-color': [
+            'match',
+            ['get', 'FY20_Statu'],
+            'Planning',
+            `${STATUS_PLANNING_COLOR}`,
+            'Design',
+            `${STATUS_DESIGN_COLOR}`,
+            'Construction',
+            `${STATUS_CONSTRUCTION_COLOR}`,
+            /* other */ '#ccc',
+          ],
           'line-width': { stops: [[10, 1], [11, 1.5], [20, 6]] },
         },
       });
 
-      // Add street work as a layer.
-      this.map.addSource('publicWorksStreets-line', {
+      // Add streets capital projects
+      this.map.addSource('streetsCapitalProjects-line', {
         type: 'geojson',
-        data: `${PUBLIC_WORKS_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${STREET_PROJECTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
-        id: 'publicWorksStreets',
+        id: 'streetsCapitalProjects',
         type: 'line',
-        source: 'publicWorksStreets-line',
+        source: 'streetsCapitalProjects-line',
         paint: {
-          'line-color': '#091F2F',
+          'line-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
+          'line-width': { stops: [[10, 1], [11, 1.5], [20, 6]] },
+        },
+      });
+
+      // Add ARP Streets
+      this.map.addSource('arpStreets-line', {
+        type: 'geojson',
+        data: `${ARP_STREETS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      });
+
+      this.map.addLayer({
+        id: 'arpStreets',
+        type: 'line',
+        source: 'arpStreets-line',
+        paint: {
+          'line-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
+          'line-width': { stops: [[10, 1], [11, 1.5], [20, 6]] },
+        },
+      });
+
+      // Add street and sidewalk reconstruction as a layer.
+      this.map.addSource('streetReconstruction-line', {
+        type: 'geojson',
+        data: `${STREET_RECONSTRUCTION_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      });
+
+      this.map.addLayer({
+        id: 'streetReconstruction',
+        type: 'line',
+        source: 'streetReconstruction-line',
+        paint: {
+          'line-color': [
+            'match',
+            ['get', 'Status'],
+            'Start 2019',
+            `${STATUS_PLANNING_COLOR}`,
+            'In Construction',
+            `${STATUS_CONSTRUCTION_COLOR}`,
+            /* other */ '#ccc',
+          ],
           // Make line width larger as we zoom in.
           'line-width': { stops: [[10, 1], [11, 2], [20, 6]] },
         },
@@ -252,20 +318,78 @@ class Map extends React.Component {
         },
       });
 
-      // Add the public works ramps as a layer.
-      this.map.addSource('publicWorksRamps-point', {
+      // Add southwest corridor points
+      this.map.addSource('southwestCorridor-point', {
         type: 'geojson',
-        data: `${PUBLIC_WORKS_RAMPS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${SOUTHWEST_CORRIDOR_URLS}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
-        id: 'publicWorksRamps',
+        id: 'southwestCorridor',
         type: 'circle',
-        source: 'publicWorksRamps-point',
+        source: 'southwestCorridor-point',
         paint: {
           'circle-stroke-width': 1,
           'circle-stroke-color': '#091F2F',
-          'circle-color': '#c1c1c1',
+          'circle-color': [
+            'match',
+            ['get', 'FY20_Statu'],
+            'Design',
+            `${STATUS_PLANNING_COLOR}`,
+            /* other */ '#ccc',
+          ],
+          // Make circles larger as the user zooms from 12 to 17.
+          'circle-radius': {
+            base: 3,
+            stops: [[12, 4], [17, 10]],
+          },
+        },
+      });
+
+      // Add intersection reconstruction work as a layer.
+      this.map.addSource('intersectionReconstruction-point', {
+        type: 'geojson',
+        data: `${INTERSECTION_RECONSTRUCTION_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      });
+
+      this.map.addLayer({
+        id: 'intersectionReconstruction',
+        type: 'circle',
+        source: 'intersectionReconstruction-point',
+        paint: {
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#091F2F',
+          'circle-color': [
+            'match',
+            ['get', 'Status'],
+            'Start 2019',
+            `${STATUS_PLANNING_COLOR}`,
+            'In Construction',
+            `${STATUS_CONSTRUCTION_COLOR}`,
+            /* other */ '#ccc',
+          ],
+          // Make circles larger as the user zooms from 12 to 17.
+          'circle-radius': {
+            base: 3,
+            stops: [[12, 4], [17, 10]],
+          },
+        },
+      });
+
+      // Add the public works ramps as a layer.
+      this.map.addSource('pedestrianRamps-point', {
+        type: 'geojson',
+        data: `${PEDESTRIAN_RAMPS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      });
+
+      this.map.addLayer({
+        id: 'pedestrianRamps',
+        type: 'circle',
+        source: 'pedestrianRamps-point',
+        paint: {
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#091F2F',
+          'circle-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
           // Make circles larger as the user zooms from 12 to 17.
           'circle-radius': {
             base: 3,
@@ -277,7 +401,7 @@ class Map extends React.Component {
       // Add the budget facilities as a layer.
       this.map.addSource('budgetFacilities-point', {
         type: 'geojson',
-        data: `${PROJECTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${BUDGET_FACILITIES_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
       this.map.addLayer({
@@ -290,21 +414,23 @@ class Map extends React.Component {
           // We color the circles by project status.
           'circle-color': [
             'match',
-            ['get', 'Publish_Status'],
+            ['get', 'publish_status'],
             'Annual Program',
-            '#66c2a5',
+            `${STATUS_ANNUAL_PROGRAM_COLOR}`,
             'Ongoing Program',
-            '#66c2a5',
+            `${STATUS_ANNUAL_PROGRAM_COLOR}`,
             'In Construction',
-            '#3e6987',
+            `${STATUS_CONSTRUCTION_COLOR}`,
+            'Implementation Underway',
+            `${STATUS_CONSTRUCTION_COLOR}`,
             'In Design',
-            '#288BE4',
+            `${STATUS_DESIGN_COLOR}`,
             'New Project',
-            '#fdae61',
+            `${STATUS_PLANNING_COLOR}`,
             'Study Underway',
-            '#fee08b',
+            `${STATUS_PLANNING_COLOR}`,
             'To Be Scheduled',
-            '#5e4fa2',
+            `${STATUS_PLANNING_COLOR}`,
             /* other */ '#ccc',
           ],
           // Make circles larger as the user zooms from 12 to 17.
@@ -403,38 +529,37 @@ class Map extends React.Component {
       // We don't want the red waypoint icon to highlight if a user clicks
       // on it, so we first check to make sure the user clicked on a feature
       // then we check to make sure that feature isn't the geocoding result.
-      // The same goes for the City Council Layer and the slow streets outline
-      // layer.
+      // The same goes for the City Council Layer and the slow streets layer.
       if (
         feature &&
         feature.layer.id != 'geocoding-result' &&
         feature.layer.id != 'cityCouncilDistricts' &&
-        feature.layer.id != 'slowStreets-outline'
+        feature.layer.id != 'slowStreetsAreas-outline' &&
+        feature.layer.id != 'slowStreetsAreas' &&
+        feature.layer.id != 'highlight-point' &&
+        feature.layer.id != 'highlight-line' &&
+        feature.layer.id != 'highlight-polygon'
       ) {
         const coordinates = [e.lngLat.lng, e.lngLat.lat];
         const highlightLayer = getHighlightLayer(feature.layer.id);
         this.map.setLayoutProperty(highlightLayer, 'visibility', 'visible');
         this.map.getSource(highlightLayer).setData(feature.geometry);
 
-        // We want the map to center on the clicked point. Because we have
-        // the pop-up display as a div in the bottom section of the map, we
-        // do a little math on the latitude to adjust the map's "center".
-        this.map.flyTo({
-          center: [
-            coordinates[0],
-            coordinates[1] +
-              0.5 *
-                0.33 *
-                (this.map.getBounds().getSouth() -
-                  this.map.getBounds().getNorth()),
-          ],
-        });
-
         this.setState({
           clickedFeatureDataset: feature.layer.id,
           clickedFeatureProperties: feature.properties,
+          clickedFeature: feature,
           showTable: true,
         });
+
+        new mapboxgl.Popup({ closeOnClick: true })
+          .setLngLat(coordinates)
+          .setHTML(
+            `<div style="min-width: 230px; max-width: 500px;">
+            ${getPopupHTML(feature)}
+            </div>`
+          )
+          .addTo(this.map);
       } else {
         this.setState({ showTable: false });
       }
@@ -444,11 +569,15 @@ class Map extends React.Component {
     this.map.on('mousemove', e => {
       const features = this.map.queryRenderedFeatures(e.point, {
         layers: [
+          'walkableStreetsSidewalks',
+          'slowStreetsLines',
+          'streetsCapitalProjects',
+          'arpStreets',
+          'streetReconstruction',
+          'southwestCorridor',
+          'intersectionReconstruction',
+          'pedestrianRamps',
           'budgetFacilities',
-          'publicWorksRamps',
-          'publicWorksStreets',
-          'walkableStreets',
-          'slowStreets',
         ],
       });
 
@@ -467,44 +596,115 @@ class Map extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.cabinetSelection !== this.props.cabinetSelection) {
       if (this.props.cabinetSelection == 'All') {
-        this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'visible');
         this.map.setLayoutProperty(
-          'publicWorksStreets',
+          'walkableStreetsSidewalks',
           'visibility',
           'visible'
         );
-        this.map.setLayoutProperty('walkableStreets', 'visibility', 'visible');
-        this.map.setLayoutProperty('slowStreets', 'visibility', 'visible');
+        'slowStreetsAreas-outline',
+          this.map.setLayoutProperty(
+            'slowStreetsAreas',
+            'visibility',
+            'visible'
+          );
         this.map.setLayoutProperty(
-          'slowStreets-outline',
+          'streetsCapitalProjects',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty('arpStreets', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'streetReconstruction',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty(
+          'southwestCorridor',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty(
+          'intersectionReconstruction',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty('pedestrianRamps', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'slowStreetsAreas-outline',
           'visibility',
           'visible'
         );
         this.map.setFilter('budgetFacilities', ['all']);
       } else if (this.props.cabinetSelection == 'Streets') {
-        this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'visible');
         this.map.setLayoutProperty(
-          'publicWorksStreets',
+          'walkableStreetsSidewalks',
           'visibility',
           'visible'
         );
-        this.map.setLayoutProperty('walkableStreets', 'visibility', 'visible');
-        this.map.setLayoutProperty('slowStreets', 'visibility', 'visible');
+        this.map.setLayoutProperty('slowStreetsAreas', 'visibility', 'visible');
         this.map.setLayoutProperty(
-          'slowStreets-outline',
+          'slowStreetsAreas-outline',
           'visibility',
           'visible'
         );
-        this.map.setFilter('budgetFacilities', ['==', 'Cabinet', 'Streets']);
+        this.map.setLayoutProperty('slowStreetsLines', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'streetsCapitalProjects',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty('arpStreets', 'visibility', 'visible');
+        this.map.setLayoutProperty(
+          'streetReconstruction',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty(
+          'southwestCorridor',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty(
+          'intersectionReconstruction',
+          'visibility',
+          'visible'
+        );
+        this.map.setLayoutProperty('pedestrianRamps', 'visibility', 'visible');
+        this.map.setFilter('budgetFacilities', ['==', 'cabinet', 'Streets']);
       } else {
-        this.map.setLayoutProperty('publicWorksRamps', 'visibility', 'none');
-        this.map.setLayoutProperty('publicWorksStreets', 'visibility', 'none');
-        this.map.setLayoutProperty('walkableStreets', 'visibility', 'none');
-        this.map.setLayoutProperty('slowStreets', 'visibility', 'none');
-        this.map.setLayoutProperty('slowStreets-outline', 'visibility', 'none');
+        this.map.setLayoutProperty(
+          'walkableStreetsSidewalks',
+          'visibility',
+          'none'
+        );
+        this.map.setLayoutProperty('slowStreetsAreas', 'visibility', 'none');
+        this.map.setLayoutProperty(
+          'slowStreetsAreas-outline',
+          'visibility',
+          'none'
+        );
+        this.map.setLayoutProperty('slowStreetsLines', 'visibility', 'none');
+        this.map.setLayoutProperty(
+          'streetsCapitalProjects',
+          'visibility',
+          'none'
+        );
+        this.map.setLayoutProperty('arpStreets', 'visibility', 'none');
+        this.map.setLayoutProperty(
+          'streetReconstruction',
+          'visibility',
+          'none'
+        );
+        this.map.setLayoutProperty('southwestCorridor', 'visibility', 'none');
+        this.map.setLayoutProperty(
+          'intersectionReconstruction',
+          'visibility',
+          'none'
+        );
+        this.map.setLayoutProperty('pedestrianRamps', 'visibility', 'none');
         this.map.setFilter('budgetFacilities', [
           '==',
-          'Cabinet',
+          'cabinet',
           this.props.cabinetSelection,
         ]);
       }
@@ -522,6 +722,7 @@ class Map extends React.Component {
         <Table
           dataset={this.state.clickedFeatureDataset}
           properties={this.state.clickedFeatureProperties}
+          feature={this.state.clickedFeature}
           visible={this.state.showTable}
         />
         <div

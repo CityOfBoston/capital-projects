@@ -42,6 +42,7 @@ export default class Layout extends React.Component {
           label {
             font-family: 'Montserrat';
           }
+
           p,
           input {
             font-family: 'Lora';
@@ -69,10 +70,32 @@ export default class Layout extends React.Component {
 
           // select dropdown styles
           .form-control {
-            border: 3px solid #091f2f;
+            border: 2px solid #091f2f;
             font-family: 'Lora', serif;
             font-style: italic;
             border-radius: 0px;
+          }
+
+          .sel-c:after {
+            top: 2px;
+            bottom: 2px;
+            right: 2px;
+          }
+
+          #popupTable {
+            display: none;
+          }
+
+          @media only screen and (max-width: 500px) {
+            .mapboxgl-popup-tip {
+              visibility: hidden;
+            }
+            .mapboxgl-popup-content {
+              visibility: hidden;
+            }
+            #popupTable {
+              display: block;
+            }
           }
 
           // geocoder style
@@ -90,7 +113,7 @@ export default class Layout extends React.Component {
             box-shadow: none;
             font-family: 'Lora';
             font-style: italic;
-            font-size: 16px;
+            font-size: 20px;
             min-width: 100%;
           }
 
@@ -124,33 +147,25 @@ export default class Layout extends React.Component {
           <Navbar>
             <div>
               <h1
-                className="text-uppercase font-weight-bold m-0 pr-2"
-                style={{
-                  display: 'inline-block',
-                  lineHeight: '.9em',
-                }}
+                className="d-inline-block text-uppercase font-weight-bold mb-0 mt-1"
+                style={{ letterSpacing: '1px' }}
               >
                 Capital Projects
-              </h1>
-              <p
-                className="font-italic m-0"
-                style={{
-                  display: 'inline-block',
-                }}
-              >
+              </h1>{' '}
+              <p className="d-inline-block mb-0 ml-1 font-italic">
                 Fiscal Years 2019-2023
               </p>
             </div>
-            <div className="">
-              <div className="">
+            <div className="lo">
+              <div className="lo-l">
                 <a href="https://www.boston.gov/">
                   <img
-                    src="/capital-projects/static/budgetCob.png"
+                    src="https://patterns.boston.gov/images/public/logo.svg"
                     alt="Boston.gov"
-                    className=""
-                    style={{ height: '3em' }}
+                    className="lo-i"
                   />
                 </a>
+                <span className="lo-t">Mayor Martin J. Walsh</span>
               </div>
             </div>
           </Navbar>

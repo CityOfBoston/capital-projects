@@ -29,7 +29,7 @@ class MapContainer extends React.Component {
           {/* add legend twice - once for when screen is large 
             and it should display above the map, and once for when 
             screen is small and it should display below the map */}
-          <Col className="pt-5 p-0 d-none d-lg-block">
+          <Col className="pt-4 p-0 d-none d-lg-block">
             <Legend />
           </Col>
         </Col>
