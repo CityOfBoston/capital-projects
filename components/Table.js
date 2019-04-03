@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import getPopupHTMl from './Popup';
+import getPopupHTML from './Popup';
 
 export default function Table(props) {
-  const html = props.feature != '' ? getPopupHTMl(props.feature) : null;
+  const html = props.feature != '' ? getPopupHTML(props.feature) : null;
   return (
     <div
       style={{

@@ -8,7 +8,7 @@ const formatter = new Intl.NumberFormat('en-US', {
 
 // Depending on the layer the user clicked on, we return different content for
 // the popup that is specifc to each dataset.
-export default function getPopupHTMl(feature) {
+export default function getPopupHTML(feature) {
   if (feature.layer.id == 'budgetFacilities') {
     return `<div>                
       <h5 class="text-uppercase">${feature.properties['project_title']}</h5>
