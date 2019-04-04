@@ -10,12 +10,14 @@ export default function Table(props) {
         position: 'absolute',
         zIndex: 1000,
         // Leave room for the legend
-        bottom: '130px',
+        bottom: '220px',
         background: 'white',
         visibility: props.visible ? 'visible' : 'hidden',
-        width: '100%',
         minHeight: '45%',
+        left: 0,
+        right: 0,
       }}
+      className="pt-2 pr-4 pl-4"
       id="popupTable"
       dangerouslySetInnerHTML={{ __html: html }}
     />

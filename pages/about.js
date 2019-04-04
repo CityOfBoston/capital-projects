@@ -7,13 +7,15 @@ export default class AboutPage extends React.Component {
     return (
       <div>
         <Layout title="Capital Projects" aboutPage>
-          <Col className="pl-5 pr-5">
-            <div className="sh mt-4 mb-4">
-              <h2 className="sh-title">Placeholder Text</h2>
-            </div>
-            <p>placeholder text</p>
+          <Col className="p-5">
+            <h4>Capital Projects Map</h4>
+            <p>
+              This map shows all City parks, facilities, and streets with
+              capital projects in the FY20 Recommended Capital Plan. It does not
+              show City-wide investments such as technology or street trees.
+            </p>
 
-            <p style={{ fontStyle: 'italic' }}>
+            <p>
               Please note that the data and information on this website is for
               informational purposes only. While we seek to provide accurate
               information, note that errors may be present and information

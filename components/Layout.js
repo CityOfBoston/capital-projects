@@ -30,6 +30,19 @@ export default class Layout extends React.Component {
             name="viewport"
             content="width=device-width, initial-scale=1.0"
           />
+          {/* Add Google Analytics. */}
+          <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=UA-99773468-13"
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments)}
+            gtag('js', new Date());
+            gtag('config', 'UA-99773468-13');`,
+            }}
+          />
         </Head>
         {/* Make sure the heigh of the body element is the entire view port. */}
         <style global jsx>{`
@@ -195,7 +208,10 @@ export default class Layout extends React.Component {
                 </a>
               </li>
               <li className="nv-s-l-i">
-                <a className="nv-s-l-a" href="https://data.boston.gov/">
+                <a
+                  className="nv-s-l-a"
+                  href="https://data.boston.gov/organization/office-of-budget-management"
+                >
                   Get the data
                 </a>
               </li>

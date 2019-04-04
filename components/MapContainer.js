@@ -33,7 +33,7 @@ class MapContainer extends React.Component {
             <Legend />
           </Col>
         </Col>
-        <Col lg="9" className="p-lg-0 pr-md-5 pl-md-5">
+        <Col lg="9" className="p-lg-0 pr-4 pl-4">
           <Map cabinetSelection={this.state.cabinetSelection} />
           {/* second instance of the legend component for when 
           screen is small */}
