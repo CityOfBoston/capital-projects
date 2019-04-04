@@ -9,7 +9,7 @@ export default function Filters(props) {
         <div id="geocoder" style={{ width: '100%' }} />
       </Card>
 
-      <Card className="border-0 pt-2 ml-1 mr-2">
+      <Card className="border-0 pt-2 ml-1 mr-2 pb-3">
         <h5 className="text-uppercase" style={{ letterSpacing: '1px' }}>
           Filter crashes
         </h5>

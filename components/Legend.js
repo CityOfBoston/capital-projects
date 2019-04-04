@@ -19,7 +19,7 @@ export default function Legend() {
               height="25x"
               className="ml-3 mr-1 center-block"
             />
-            <p className="font-italic">Annual or Ongoing Programs</p>
+            <p className="font-italic">Annual Programs/Other</p>
           </Row>
 
           <Row>
@@ -50,6 +50,16 @@ export default function Legend() {
               className="ml-3 mr-1"
             />
             <p className="font-italic">Projects in construction</p>
+          </Row>
+
+          <Row>
+            <img
+              src="/capital-projects/static/blackRect.svg"
+              width="25px"
+              height="25px"
+              className="ml-3 mr-1"
+            />
+            <p className="font-italic">City council districts</p>
           </Row>
         </Card>
       </Card>

@@ -555,7 +555,7 @@ class Map extends React.Component {
         new mapboxgl.Popup({ closeOnClick: true })
           .setLngLat(coordinates)
           .setHTML(
-            `<div style="min-width: 230px; max-width: 500px;">
+            `<div style="min-width: 400px; max-width: 500px;">
             ${getPopupHTML(feature)}
             </div>`
           )
