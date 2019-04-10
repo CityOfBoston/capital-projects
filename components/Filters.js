@@ -11,7 +11,7 @@ export default function Filters(props) {
 
       <Card className="border-0 pt-2 ml-1 mr-2 pb-3">
         <h5 className="text-uppercase" style={{ letterSpacing: '1px' }}>
-          Filter crashes
+          Filter projects
         </h5>
         <Form className="mt-2">
           <div className="sel">
