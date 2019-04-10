@@ -45,17 +45,9 @@ export default function getPopupHTML(feature) {
   } else if (feature.layer.id == 'slowStreetsLines') {
     return `<div>
         <h5>${feature.properties['FY20_Proje']}</h5>
-        <p class="cd-d">
-          The
-          <a href="https://www.boston.gov/departments/transportation/neighborhood-slow-streets">
-            Neighborhood Slow Streets
-          </a>
-          program attempts to reduce the number of and severity of crashes on
-          residential streets.
-        </p>
         <ul class="dl dl--sm">
           <li class="dl-i">
-            <span class="dl-d">Project Type:</span>
+            <span class="dl-d">Type:</span>
             <span class="dl-t">${feature.properties['FY20_Type']}</span>
           </li>
           <li class="dl-i">
