@@ -13,7 +13,7 @@ const MapboxGeocoder = process.browser
 const CITY_COUNCIL_DISTRICTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/City_Council_Districts_View/FeatureServer/0';
 
-const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_budget_facilities/FeatureServer/0`;
+const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_budget_facilities/FeatureServer/0`;
 
 const PEDESTRIAN_RAMPS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_pedestrian_ramps/FeatureServer/0';
