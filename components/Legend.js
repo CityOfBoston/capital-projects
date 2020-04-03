@@ -10,7 +10,6 @@ export default function Legend() {
             Capital Projects
           </h5>
         </Card>
-
         <Card className="border-0 p-1">
           <Row>
             <img

@@ -207,15 +207,31 @@ class Map extends React.Component {
         data: `${CITY_COUNCIL_DISTRICTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
-      this.map.addLayer({
-        id: 'cityCouncilDistricts',
-        type: 'line',
-        source: 'cityCounilDistricts-polygon',
-        paint: {
-          'line-color': '#091F2F',
-        },
+      // this.map.addLayer({
+      //   id: 'cityCouncilDistricts',
+      //   type: 'line',
+      //   source: 'cityCounilDistricts-polygon',
+      //   paint: {
+      //     'line-color': '#091F2F',
+      //   },
+      // });
+
+      // Add walkable streets as a layer.
+      this.map.addSource('walkableStreetsSidewalks-polygon', {
+        type: 'geojson',
+        data: `${WALKABLE_STREETS_SIDEWALKS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
 
+      this.map.addLayer({
+        id: 'walkableStreetsSidewalks',
+        type: 'fill',
+        source: 'walkableStreetsSidewalks-polygon',
+        paint: {
+          'fill-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
+          'fill-outline-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
+        },
+      });
+      
       // Add walkable streets as a layer.
       this.map.addSource('walkableStreetsSidewalks-polygon', {
         type: 'geojson',
@@ -544,7 +560,7 @@ class Map extends React.Component {
         const highlightLayer = getHighlightLayer(feature.layer.id);
         this.map.setLayoutProperty(highlightLayer, 'visibility', 'visible');
         this.map.getSource(highlightLayer).setData(feature.geometry);
-
+        
         this.setState({
           clickedFeatureDataset: feature.layer.id,
           clickedFeatureProperties: feature.properties,

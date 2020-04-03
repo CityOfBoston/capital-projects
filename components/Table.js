@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import getPopupHTML from './Popup';
 
 export default function Table(props) {
