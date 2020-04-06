@@ -59,7 +59,7 @@ export default function getPopupHTML(feature) {
   } else if (feature.layer.id == 'streetsCapitalProjects') {
     return `<div>
         <h5>${feature.properties['highway']}</h5>
-        <p class="cd-d">${feature.properties['project_name']}</p>
+        <p class="cd-d">${feature.properties['Project']}</p>
       </div>`;
   } else if (feature.layer.id == 'arpStreets') {
     return `<div>
