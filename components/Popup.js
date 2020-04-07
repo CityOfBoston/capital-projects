@@ -44,15 +44,15 @@ export default function getPopupHTML(feature) {
       </div>`;
   } else if (feature.layer.id == 'slowStreetsLines') {
     return `<div>
-        <h5>${feature.properties['FY20_Proje']}</h5>
+        <h5>${feature.properties['project_name']}</h5>
         <ul class="dl dl--sm">
           <li class="dl-i">
             <span class="dl-d">Type:</span>
-            <span class="dl-t">${feature.properties['FY20_Type']}</span>
+            <span class="dl-t">${feature.properties['type']}</span>
           </li>
           <li class="dl-i">
             <span class="dl-d">Status:</span>
-            <span class="dl-t">${feature.properties['FY20_Statu']}</span>
+            <span class="dl-t">${feature.properties['status']}</span>
           </li>
         </ul>
       </div>`;
@@ -67,7 +67,7 @@ export default function getPopupHTML(feature) {
         <ul class="dl dl--sm">
           <li class="dl-i">
             <span class="dl-d">From:</span>
-            <span class="dl-t">${feature.properties['From_Stree']}</span>
+            <span class="dl-t">${feature.properties['From_Street']}</span>
           </li>
           <li class="dl-i">
             <span class="dl-d">To:</span>
@@ -79,14 +79,14 @@ export default function getPopupHTML(feature) {
     return `<div>
         <h5>Street Reconstruction - ${feature.properties['Street']}</h5>
         <ul class="dl dl--sm">
-          <li class="dl-i">
+          <!--<li class="dl-i">
             <span class="dl-d">From:</span>
             <span class="dl-t">${feature.properties['From_']}</span>
           </li>
           <li class="dl-i">
             <span class="dl-d">To:</span>
             <span class="dl-t">${feature.properties['To_']}</span>
-          </li>
+          </li>-->
           <li class="dl-i">
             <span class="dl-d">Status:</span>
             <span class="dl-t">${feature.properties['Status']}</span>
@@ -95,15 +95,15 @@ export default function getPopupHTML(feature) {
       </div>`;
   } else if (feature.layer.id == 'southwestCorridor') {
     return `<div>
-        <h5>${feature.properties['FY20_Proje']}</h5>
+        <h5>${feature.properties['project_name']}</h5>
         <ul class="dl dl--sm">
           <li class="dl-i">
             <span class="dl-d">Type:</span>
-            <span class="dl-t">${feature.properties['FY20_Type']}</span>
+            <span class="dl-t">${feature.properties['type']}</span>
           </li>
           <li class="dl-i">
             <span class="dl-d">Status:</span>
-            <span class="dl-t">${feature.properties['FY20_Statu']}</span>
+            <span class="dl-t">${feature.properties['status']}</span>
           </li>
         </ul>
       </div>`;
@@ -124,7 +124,7 @@ export default function getPopupHTML(feature) {
   } else if (feature.layer.id == 'pedestrianRamps') {
     return `<div>
         <h5>
-          Pedestrian Ramp - ${feature.properties['LOCATION']}
+          Pedestrian Ramp - ${feature.properties['HIGHWAY']}
         </h5>
         <p class="cd-d">
           Every pedestrian ramp the Public Works Department replaces meets
