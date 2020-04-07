@@ -13,36 +13,34 @@ const MapboxGeocoder = process.browser
 const CITY_COUNCIL_DISTRICTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/City_Council_Districts_View/FeatureServer/0';
 
-const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_budget_facilities/FeatureServer/0`;
+const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_budget_facilities/FeatureServer/0`;
 
 const PEDESTRIAN_RAMPS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_pedestrian_ramps/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_pedestrian_ramps/FeatureServer/0';
 
 const STREET_RECONSTRUCTION_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_street_reconstruction/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_street_reconstruction/FeatureServer/0';
 
-// TODO: ADD TO MAP
-const INTERSECTION_RECONSTRUCTION_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_resconstruction_intersections/FeatureServer/0';
+// Not recieved in FY21.
+// const INTERSECTION_RECONSTRUCTION_URL =
+//   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_resconstruction_intersections/FeatureServer/0';
 
-// TODO: ADD TO MAP
 const STREET_PROJECTS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_street_capital_projects/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_street_capital_projects/FeatureServer/0';
 
-// TODO: ADD TO MAP
 const ARP_STREETS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_arp_streets/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_arp_streets/FeatureServer/0';
 
-// TODO: ADD TO MAP
 const SOUTHWEST_CORRIDOR_URLS =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_south_west_corridor_crossings/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_south_west_corridor_crossings/FeatureServer/0';
 
-const WALKABLE_STREETS_SIDEWALKS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_walkable_streets_sidewalk_reconstruction/FeatureServer/0';
+// Not recieved in FY21.
+// const WALKABLE_STREETS_SIDEWALKS_URL =
+//   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_walkable_streets_sidewalk_reconstruction/FeatureServer/0';
 
 // TODO: add to map
 const SLOW_STREETS_LINES_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_btd_corridors_slow_streets/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_btd_corridors_slow_streets/FeatureServer/0';
 
 // Separate out the colors for each status so we can more easily use them across
 // datasets.
@@ -216,21 +214,22 @@ class Map extends React.Component {
         },
       });
 
+      // Not revcieved in FY21.
       // Add walkable streets as a layer.
-      this.map.addSource('walkableStreetsSidewalks-polygon', {
-        type: 'geojson',
-        data: `${WALKABLE_STREETS_SIDEWALKS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
-      });
+      // this.map.addSource('walkableStreetsSidewalks-polygon', {
+      //   type: 'geojson',
+      //   data: `${WALKABLE_STREETS_SIDEWALKS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      // });
 
-      this.map.addLayer({
-        id: 'walkableStreetsSidewalks',
-        type: 'fill',
-        source: 'walkableStreetsSidewalks-polygon',
-        paint: {
-          'fill-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
-          'fill-outline-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
-        },
-      });
+      // this.map.addLayer({
+      //   id: 'walkableStreetsSidewalks',
+      //   type: 'fill',
+      //   source: 'walkableStreetsSidewalks-polygon',
+      //   paint: {
+      //     'fill-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
+      //     'fill-outline-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
+      //   },
+      // });
 
       // Add the individual streets in each neighborhood slow street as a layer.
       this.map.addSource('slowStreetsLines-line', {
@@ -245,7 +244,7 @@ class Map extends React.Component {
         paint: {
           'line-color': [
             'match',
-            ['get', 'FY20_Statu'],
+            ['get', 'status'],
             'Planning',
             `${STATUS_PLANNING_COLOR}`,
             'Design',
@@ -304,9 +303,11 @@ class Map extends React.Component {
           'line-color': [
             'match',
             ['get', 'Status'],
-            'Start 2019',
+            'Planning',
             `${STATUS_PLANNING_COLOR}`,
-            'In Construction',
+            'Design',
+            `${STATUS_DESIGN_COLOR}`,
+            'Construction',
             `${STATUS_CONSTRUCTION_COLOR}`,
             /* other */ '#ccc',
           ],
@@ -333,7 +334,7 @@ class Map extends React.Component {
           'circle-stroke-color': '#091F2F',
           'circle-color': [
             'match',
-            ['get', 'FY20_Statu'],
+            ['get', 'status'],
             'Design',
             `${STATUS_PLANNING_COLOR}`,
             /* other */ '#ccc',
@@ -346,35 +347,38 @@ class Map extends React.Component {
         },
       });
 
+      // Not recieved in FY21.
       // Add intersection reconstruction work as a layer.
-      this.map.addSource('intersectionReconstruction-point', {
-        type: 'geojson',
-        data: `${INTERSECTION_RECONSTRUCTION_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
-      });
+      // this.map.addSource('intersectionReconstruction-point', {
+      //   type: 'geojson',
+      //   data: `${INTERSECTION_RECONSTRUCTION_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+      // });
 
-      this.map.addLayer({
-        id: 'intersectionReconstruction',
-        type: 'circle',
-        source: 'intersectionReconstruction-point',
-        paint: {
-          'circle-stroke-width': 1,
-          'circle-stroke-color': '#091F2F',
-          'circle-color': [
-            'match',
-            ['get', 'Status'],
-            'Start 2019',
-            `${STATUS_PLANNING_COLOR}`,
-            'In Construction',
-            `${STATUS_CONSTRUCTION_COLOR}`,
-            /* other */ '#ccc',
-          ],
-          // Make circles larger as the user zooms from 12 to 17.
-          'circle-radius': {
-            base: 3,
-            stops: [[12, 4], [17, 10]],
-          },
-        },
-      });
+      // this.map.addLayer({
+      //   id: 'intersectionReconstruction',
+      //   type: 'circle',
+      //   source: 'intersectionReconstruction-point',
+      //   paint: {
+      //     'circle-stroke-width': 1,
+      //     'circle-stroke-color': '#091F2F',
+      //     'circle-color': [
+      //       'match',
+      //       ['get', 'Status'],
+      //       'Planning',
+      //       `${STATUS_PLANNING_COLOR}`,
+      //       'Design',
+      //       `${STATUS_DESIGN_COLOR}`,
+      //       'Construction',
+      //       `${STATUS_CONSTRUCTION_COLOR}`,
+      //       /* other */ '#ccc',
+      //     ],
+      //     // Make circles larger as the user zooms from 12 to 17.
+      //     'circle-radius': {
+      //       base: 3,
+      //       stops: [[12, 4], [17, 10]],
+      //     },
+      //   },
+      // });
 
       // Add the public works ramps as a layer.
       this.map.addSource('pedestrianRamps-point', {
@@ -569,13 +573,13 @@ class Map extends React.Component {
     this.map.on('mousemove', e => {
       const features = this.map.queryRenderedFeatures(e.point, {
         layers: [
-          'walkableStreetsSidewalks',
+          //'walkableStreetsSidewalks',
           'slowStreetsLines',
           'streetsCapitalProjects',
           'arpStreets',
           'streetReconstruction',
           'southwestCorridor',
-          'intersectionReconstruction',
+          //'intersectionReconstruction',
           'pedestrianRamps',
           'budgetFacilities',
         ],
