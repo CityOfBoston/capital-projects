@@ -13,35 +13,35 @@ const MapboxGeocoder = process.browser
 const CITY_COUNCIL_DISTRICTS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/City_Council_Districts_View/FeatureServer/0';
 
-const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_budget_facilities/FeatureServer/0`;
+const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcGIS/rest/services/fy22_budget_facilities/FeatureServer/0`;
 
 const PEDESTRIAN_RAMPS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_pedestrian_ramps/FeatureServer/0';
 
-const STREET_RECONSTRUCTION_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_street_reconstruction/FeatureServer/0';
+/*const STREET_RECONSTRUCTION_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_street_reconstruction/FeatureServer/0';*/
 
 // Not recieved in FY21.
 // const INTERSECTION_RECONSTRUCTION_URL =
 //   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_resconstruction_intersections/FeatureServer/0';
 
 const STREET_PROJECTS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_street_capital_projects/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy22_street_capital_projects/FeatureServer/0';
 
 const ARP_STREETS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_arp_streets/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy22_arp_streets/FeatureServer/0';
 
 const SOUTHWEST_CORRIDOR_URLS =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_south_west_corridor_crossings/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy22_south_west_corridor_crossings/FeatureServer/0';
 
 // Not recieved in FY21.
 // const WALKABLE_STREETS_SIDEWALKS_URL =
 //   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_walkable_streets_sidewalk_reconstruction/FeatureServer/0';
 
 // TODO: add to map
-const SLOW_STREETS_LINES_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_btd_corridors_slow_streets/FeatureServer/0';
-
+/*const SLOW_STREETS_LINES_URL =
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_btd_corridors_slow_streets/FeatureServer/0';*/
+  
 // Separate out the colors for each status so we can more easily use them across
 // datasets.
 const STATUS_PLANNING_COLOR = '#F18821';
