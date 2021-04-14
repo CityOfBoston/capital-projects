@@ -77,7 +77,7 @@ export default function getPopupHTML(feature) {
       </div>`;
   } else if (feature.layer.id == 'streetReconstruction') {
     return `<div>
-        <h5>Street Reconstruction - ${feature.properties['Street']}</h5>
+        <h5>Street Reconstruction - ${feature.properties['Proj_Name']}</h5>
         <ul class="dl dl--sm">
           <!--<li class="dl-i">
             <span class="dl-d">From:</span>
