@@ -15,9 +15,12 @@ const CITY_COUNCIL_DISTRICTS_URL =
 
 const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcGIS/rest/services/fy22_budget_facilities/FeatureServer/0`;
 
-const PEDESTRIAN_RAMPS_URL =
+// Not recieved in FY22.
+/*const PEDESTRIAN_RAMPS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_pedestrian_ramps/FeatureServer/0';
+  */
 
+// Not recieved in FY22.
 /*const STREET_RECONSTRUCTION_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_street_reconstruction/FeatureServer/0';*/
 
@@ -38,10 +41,13 @@ const SOUTHWEST_CORRIDOR_URLS =
 // const WALKABLE_STREETS_SIDEWALKS_URL =
 //   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_walkable_streets_sidewalk_reconstruction/FeatureServer/0';
 
-// TODO: add to map
+
+// Not recieved in FY22.
 /*const SLOW_STREETS_LINES_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy21_btd_corridors_slow_streets/FeatureServer/0';*/
-  
+
+
+// TODO: add to map
 // Separate out the colors for each status so we can more easily use them across
 // datasets.
 const STATUS_PLANNING_COLOR = '#F18821';
@@ -231,8 +237,9 @@ class Map extends React.Component {
       //   },
       // });
 
+      // Not revcieved in FY22.
       // Add the individual streets in each neighborhood slow street as a layer.
-      this.map.addSource('slowStreetsLines-line', {
+      /*this.map.addSource('slowStreetsLines-line', {
         type: 'geojson',
         data: `${SLOW_STREETS_LINES_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
@@ -251,11 +258,11 @@ class Map extends React.Component {
             `${STATUS_DESIGN_COLOR}`,
             'Construction',
             `${STATUS_CONSTRUCTION_COLOR}`,
-            /* other */ '#ccc',
+            '#ccc',
           ],
           'line-width': { stops: [[10, 1], [11, 1.5], [20, 6]] },
         },
-      });
+      });*/
 
       // Add streets capital projects
       this.map.addSource('streetsCapitalProjects-line', {
@@ -289,15 +296,18 @@ class Map extends React.Component {
         },
       });
 
+      // Not recieved in FY22.
       // Add street and sidewalk reconstruction as a layer.
-      this.map.addSource('streetReconstruction-line', {
+      /*this.map.addSource('streetReconstruction-line', {
         type: 'geojson',
         data: `${STREET_RECONSTRUCTION_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
+      */
 
+      /*
       this.map.addLayer({
-        id: 'streetReconstruction',
-        type: 'line',
+      id: 'streetReconstruction',
+       type: 'line',
         source: 'streetReconstruction-line',
         paint: {
           'line-color': [
@@ -309,16 +319,16 @@ class Map extends React.Component {
             `${STATUS_DESIGN_COLOR}`,
             'Construction',
             `${STATUS_CONSTRUCTION_COLOR}`,
-            /* other */ '#ccc',
+            '#ccc',
           ],
-          // Make line width larger as we zoom in.
           'line-width': { stops: [[10, 1], [11, 2], [20, 6]] },
         },
         layout: {
           'line-cap': 'round',
         },
       });
-
+      */
+  
       // Add southwest corridor points
       this.map.addSource('southwestCorridor-point', {
         type: 'geojson',
@@ -380,8 +390,9 @@ class Map extends React.Component {
       //   },
       // });
 
+      // Not recieved in FY22.
       // Add the public works ramps as a layer.
-      this.map.addSource('pedestrianRamps-point', {
+      /*this.map.addSource('pedestrianRamps-point', {
         type: 'geojson',
         data: `${PEDESTRIAN_RAMPS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
@@ -394,13 +405,12 @@ class Map extends React.Component {
           'circle-stroke-width': 1,
           'circle-stroke-color': '#091F2F',
           'circle-color': `${STATUS_ANNUAL_PROGRAM_COLOR}`,
-          // Make circles larger as the user zooms from 12 to 17.
           'circle-radius': {
             base: 3,
             stops: [[12, 4], [17, 10]],
           },
         },
-      });
+      });*/
 
       // Add the budget facilities as a layer.
       this.map.addSource('budgetFacilities-point', {
