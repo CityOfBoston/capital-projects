@@ -11,7 +11,7 @@ export default class AboutPage extends React.Component {
             <h4>Capital Projects Map</h4>
             <p>
               This map shows all City parks, facilities, and streets with
-              capital projects in the FY20 Recommended Capital Plan. It does not
+              capital projects in the FY22 Recommended Capital Plan. It does not
               show City-wide investments such as technology or street trees.
             </p>
 

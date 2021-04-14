@@ -166,7 +166,7 @@ export default class Layout extends React.Component {
                 Capital Projects
               </h1>{' '}
               <p className="d-inline-block mb-0 ml-1 font-italic">
-                Fiscal Years 2021-2025
+                Fiscal Years 2022-2026
               </p>
             </div>
             <div className="lo">
@@ -178,7 +178,7 @@ export default class Layout extends React.Component {
                     className="lo-i"
                   />
                 </a>
-                <span className="lo-t">Mayor Martin J. Walsh</span>
+                <span className="lo-t">Mayor Kim Janey</span>
               </div>
             </div>
           </Navbar>
