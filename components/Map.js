@@ -31,7 +31,7 @@ const BUDGET_FACILITIES_URL = `https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcG
 //   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy20_resconstruction_intersections/FeatureServer/0';
 
 const STREET_PROJECTS_URL =
-  'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy22_street_capital_projects/FeatureServer/0';
+  'https://services.arcgis.com/sFnw0xNflSi8J0uh/ArcGIS/rest/services/fy22_capital_projects_for_map/FeatureServer/0';
 
 const ARP_STREETS_URL =
   'https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/fy22_arp_streets/FeatureServer/0';
@@ -301,13 +301,13 @@ class Map extends React.Component {
 
       // Not recieved in FY22.
       // Add street and sidewalk reconstruction as a layer.
-      /*this.map.addSource('streetReconstruction-line', {
+      this.map.addSource('streetReconstruction-line', {
         type: 'geojson',
-        data: `${STREET_RECONSTRUCTION_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
+        data: `${STREET_PROJECTS_URL}/query?where=1%3D1&outFields=*&outSR=4326&returnExceededLimitFeatures=true&f=pgeojson`,
       });
-      */
+      
 
-      /*
+      
       this.map.addLayer({
       id: 'streetReconstruction',
        type: 'line',
@@ -330,8 +330,8 @@ class Map extends React.Component {
           'line-cap': 'round',
         },
       });
-      */
-  
+      
+
       // Add southwest corridor points
       this.map.addSource('southwestCorridor-point', {
         type: 'geojson',
@@ -587,13 +587,13 @@ class Map extends React.Component {
       const features = this.map.queryRenderedFeatures(e.point, {
         layers: [
           //'walkableStreetsSidewalks',
-          'slowStreetsLines',
+          //'slowStreetsLines',
           'streetsCapitalProjects',
           'arpStreets',
           'streetReconstruction',
           'southwestCorridor',
           //'intersectionReconstruction',
-          'pedestrianRamps',
+          //'pedestrianRamps',
           'budgetFacilities',
         ],
       });
@@ -618,12 +618,12 @@ class Map extends React.Component {
           'visibility',
           'visible'
         );
-        'slowStreetsAreas-outline',
+        /*'slowStreetsAreas-outline',
           this.map.setLayoutProperty(
             'slowStreetsAreas',
             'visibility',
             'visible'
-          );
+          );*/
         this.map.setLayoutProperty(
           'streetsCapitalProjects',
           'visibility',
@@ -645,12 +645,12 @@ class Map extends React.Component {
           'visibility',
           'visible'
         );
-        this.map.setLayoutProperty('pedestrianRamps', 'visibility', 'visible');
+        /*this.map.setLayoutProperty('pedestrianRamps', 'visibility', 'visible');
         this.map.setLayoutProperty(
           'slowStreetsAreas-outline',
           'visibility',
           'visible'
-        );
+        );*/
         this.map.setFilter('budgetFacilities', ['all']);
       } else if (this.props.cabinetSelection == 'Streets') {
         this.map.setLayoutProperty(
@@ -658,13 +658,14 @@ class Map extends React.Component {
           'visibility',
           'visible'
         );
-        this.map.setLayoutProperty('slowStreetsAreas', 'visibility', 'visible');
+        /*this.map.setLayoutProperty('slowStreetsAreas', 'visibility', 'visible');
         this.map.setLayoutProperty(
           'slowStreetsAreas-outline',
           'visibility',
           'visible'
         );
         this.map.setLayoutProperty('slowStreetsLines', 'visibility', 'visible');
+        */
         this.map.setLayoutProperty(
           'streetsCapitalProjects',
           'visibility',
@@ -686,7 +687,7 @@ class Map extends React.Component {
           'visibility',
           'visible'
         );
-        this.map.setLayoutProperty('pedestrianRamps', 'visibility', 'visible');
+        //this.map.setLayoutProperty('pedestrianRamps', 'visibility', 'visible');
         this.map.setFilter('budgetFacilities', ['==', 'cabinet', 'Streets']);
       } else {
         this.map.setLayoutProperty(
@@ -694,13 +695,13 @@ class Map extends React.Component {
           'visibility',
           'none'
         );
-        this.map.setLayoutProperty('slowStreetsAreas', 'visibility', 'none');
+        /*this.map.setLayoutProperty('slowStreetsAreas', 'visibility', 'none');
         this.map.setLayoutProperty(
           'slowStreetsAreas-outline',
           'visibility',
           'none'
         );
-        this.map.setLayoutProperty('slowStreetsLines', 'visibility', 'none');
+        this.map.setLayoutProperty('slowStreetsLines', 'visibility', 'none');*/
         this.map.setLayoutProperty(
           'streetsCapitalProjects',
           'visibility',
