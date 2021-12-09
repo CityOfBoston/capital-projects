@@ -3,6 +3,7 @@ import Head from 'next/head';
 import PropTypes from 'prop-types';
 import { Navbar } from 'reactstrap';
 
+
 export default class Layout extends React.Component {
   render() {
     return (
