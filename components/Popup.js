@@ -11,17 +11,17 @@ const formatter = new Intl.NumberFormat('en-US', {
 export default function getPopupHTML(feature) {
   if (feature.layer.id == 'budgetFacilities') {
     return `<div>                
-      <h5 class="text-uppercase">${feature.properties['project_title']}</h5>
-          <p class="cd-d">${feature.properties['project_description']}</p>
+      <h5 class="text-uppercase">${feature.properties['project_ti']}</h5>
+          <p class="cd-d">${feature.properties['project_de']}</p>
           <ul class="dl dl--sm">
             <li class="dl-i">
               <span class="dl-d">Status:</span>
-              <span class="dl-t">${feature.properties['publish_status']}</span>
+              <span class="dl-t">${feature.properties['publish_st']}</span>
             </li>
             <li class="dl-i">
               <span class="dl-d">Total Budget:</span>
               <span class="dl-t">${formatter.format(
-                feature.properties['total_budget']
+                feature.properties['total_budg']
               )}</span>
             </li>
             <li class="dl-i">
