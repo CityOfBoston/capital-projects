@@ -3,7 +3,6 @@ import Head from 'next/head';
 import PropTypes from 'prop-types';
 import { Navbar } from 'reactstrap';
 
-
 export default class Layout extends React.Component {
   render() {
     return (
@@ -251,6 +250,14 @@ export default class Layout extends React.Component {
               </li>
             </ul>
             <ul className="ft-ll">
+              <li className="ft-ll-i">
+                <a
+                  href="https://www.boston.gov/departments/mayors-office/martin-j-walsh"
+                  className="ft-ll-a"
+                >
+                  Mayor Martin J Walsh
+                </a>
+              </li>
               <li className="ft-ll-i">
                 <a
                   href="https://www.boston.gov/departments/innovation-and-technology/privacy-and-security-statement"
